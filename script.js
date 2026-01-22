@@ -181,32 +181,7 @@ function updateExpressionDisplay() {
     }
 }
 
-// Keyboard support
-document.addEventListener('keydown', function (event) {
-    if (event.key >= '0' && event.key <= '9') {
-        appendNumber(event.key);
-    } else if (event.key === '.') {
-        appendNumber('.');
-    } else if (event.key === '+' || event.key === '-') {
-        appendOperator(event.key);
-    } else if (event.key === '*') {
-        event.preventDefault();
-        appendOperator('*');
-    } else if (event.key === '/') {
-        event.preventDefault();
-        appendOperator('/');
-    } else if (event.key === 'Enter' || event.key === '=') {
-        event.preventDefault();
-        calculateResult();
-    } else if (event.key === 'Backspace') {
-        event.preventDefault();
-        deleteLast();
-    } else if (event.key === 'Escape') {
-        clearDisplay();
-    }
-});
-
-// History functions
+// History functions - defined early for inline onclick handlers
 function saveToHistory(expression, result) {
     fetch('api.php?action=save', {
         method: 'POST',
@@ -300,6 +275,31 @@ window.calculateResult = function() {
         saveToHistory(expression, currentInput);
     }
 };
+
+// Keyboard support
+document.addEventListener('keydown', function (event) {
+    if (event.key >= '0' && event.key <= '9') {
+        appendNumber(event.key);
+    } else if (event.key === '.') {
+        appendNumber('.');
+    } else if (event.key === '+' || event.key === '-') {
+        appendOperator(event.key);
+    } else if (event.key === '*') {
+        event.preventDefault();
+        appendOperator('*');
+    } else if (event.key === '/') {
+        event.preventDefault();
+        appendOperator('/');
+    } else if (event.key === 'Enter' || event.key === '=') {
+        event.preventDefault();
+        calculateResult();
+    } else if (event.key === 'Backspace') {
+        event.preventDefault();
+        deleteLast();
+    } else if (event.key === 'Escape') {
+        clearDisplay();
+    }
+});
 
 // Initialize on page load
 window.addEventListener('load', function() {
