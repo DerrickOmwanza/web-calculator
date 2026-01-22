@@ -113,6 +113,13 @@ function calculateResult() {
         return;
     }
 
+    // Store expression before we reset variables
+    let operatorSymbol = operator;
+    if (operator === '*') operatorSymbol = '×';
+    if (operator === '/') operatorSymbol = '÷';
+    if (operator === '-') operatorSymbol = '−';
+    const expression = `${previousInput} ${operatorSymbol} ${currentInput}`;
+
     // Perform calculation based on operator
     switch (operator) {
         case '+':
@@ -148,12 +155,16 @@ function calculateResult() {
         result = result.toExponential(8);
     }
 
-    currentInput = result.toString();
+    const resultString = result.toString();
+    currentInput = resultString;
     previousInput = '';
     operator = null;
     shouldResetDisplay = true;
     updateDisplay();
     updateExpressionDisplay();
+    
+    // Save to history after calculation
+    saveToHistory(expression, resultString);
 }
 
 // Update main display
@@ -263,18 +274,6 @@ function toggleHistory() {
     const historyPanel = document.querySelector('.history-panel');
     historyPanel.classList.toggle('active');
 }
-
-// Update calculateResult to save to history
-const originalCalculateResult = calculateResult;
-window.calculateResult = function() {
-    originalCalculateResult.call(this);
-    
-    // Save to history if calculation was successful
-    if (previousInput && operator && !currentInput.includes('Cannot')) {
-        const expression = `${previousInput} ${operator} ${currentInput}`;
-        saveToHistory(expression, currentInput);
-    }
-};
 
 // Keyboard support
 document.addEventListener('keydown', function (event) {
