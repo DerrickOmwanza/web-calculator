@@ -56,9 +56,26 @@
             </div>
 
             <div class="info">
-                <p>Made with HTML, CSS & JavaScript</p>
+                <p>Made with HTML, CSS, JavaScript & PHP</p>
             </div>
         </div>
+
+        <!-- History Panel -->
+        <div class="history-panel">
+            <div class="history-header">
+                <h2>Calculation History</h2>
+                <button class="btn-close" onclick="toggleHistory()">×</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <p class="empty-history">No calculations yet</p>
+            </div>
+            <div class="history-footer">
+                <button class="btn-clear-history" onclick="clearAllHistory()">Clear All</button>
+            </div>
+        </div>
+
+        <!-- History Toggle Button -->
+        <button class="btn-history-toggle" onclick="toggleHistory()" title="Show History">📋 History</button>
     </div>
 
     <script src="script.js"></script>

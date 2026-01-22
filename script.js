@@ -206,5 +206,103 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
+// History functions
+function saveToHistory(expression, result) {
+    fetch('api.php?action=save', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            expression: expression,
+            result: result
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadHistory();
+    })
+    .catch(error => console.error('Error saving to history:', error));
+}
+
+function loadHistory() {
+    fetch('api.php?action=get')
+        .then(response => response.json())
+        .then(data => {
+            displayHistory(data.history);
+        })
+        .catch(error => console.error('Error loading history:', error));
+}
+
+function displayHistory(history) {
+    const historyList = document.getElementById('historyList');
+    
+    if (history.length === 0) {
+        historyList.innerHTML = '<p class="empty-history">No calculations yet</p>';
+        return;
+    }
+
+    historyList.innerHTML = history.map(item => `
+        <div class="history-item">
+            <div class="history-item-content">
+                <div class="history-expression">${item.expression}</div>
+                <div class="history-result">${item.result}</div>
+                <div class="history-time">${item.timestamp}</div>
+            </div>
+            <button class="history-delete-btn" onclick="deleteFromHistory('${item.id}')" title="Delete">×</button>
+        </div>
+    `).join('');
+}
+
+function deleteFromHistory(id) {
+    fetch('api.php?action=delete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: id
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadHistory();
+    })
+    .catch(error => console.error('Error deleting from history:', error));
+}
+
+function clearAllHistory() {
+    if (confirm('Are you sure you want to clear all calculations?')) {
+        fetch('api.php?action=clear', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadHistory();
+        })
+        .catch(error => console.error('Error clearing history:', error));
+    }
+}
+
+function toggleHistory() {
+    const historyPanel = document.querySelector('.history-panel');
+    historyPanel.classList.toggle('active');
+}
+
+// Update calculateResult to save to history
+const originalCalculateResult = calculateResult;
+window.calculateResult = function() {
+    originalCalculateResult.call(this);
+    
+    // Save to history if calculation was successful
+    if (previousInput && operator && !currentInput.includes('Cannot')) {
+        const expression = `${previousInput} ${operator} ${currentInput}`;
+        saveToHistory(expression, currentInput);
+    }
+};
+
 // Initialize on page load
-window.addEventListener('load', initDisplay);
+window.addEventListener('load', function() {
+    initDisplay();
+    loadHistory();
+});
